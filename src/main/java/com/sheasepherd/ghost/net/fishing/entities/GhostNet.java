@@ -4,8 +4,9 @@
  */
 package com.sheasepherd.ghost.net.fishing.entities;
 
+import com.sheasepherd.ghost.net.fishing.enums.NetStatus; // Corrected import
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "ghost_nets")
@@ -21,18 +22,20 @@ public class GhostNet {
     @Column(nullable = false)
     private Double longitude;
     
-    @Column(nullable = false)
-    private String estimatedSize;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Date createdAt;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
     
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private NetStatus status = NetStatus.REPORTED;
+    private NetStatus status;
     
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-    
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(columnDefinition = "TEXT")
+    private String description;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reporter_id")
@@ -41,95 +44,88 @@ public class GhostNet {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "retriever_id")
     private Person retriever;
-    
+
     // Constructors
     public GhostNet() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = new Date();
+        this.updatedAt = new Date();
     }
-    
-    public GhostNet(Double latitude, Double longitude, String estimatedSize) {
-        this();
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.estimatedSize = estimatedSize;
-    }
-    
+
     // Getters and Setters
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
         this.id = id;
     }
-    
+
     public Double getLatitude() {
         return latitude;
     }
-    
+
     public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
-    
+
     public Double getLongitude() {
         return longitude;
     }
-    
+
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
-    
-    public String getEstimatedSize() {
-        return estimatedSize;
+
+    public Date getCreatedAt() {
+        return createdAt;
     }
-    
-    public void setEstimatedSize(String estimatedSize) {
-        this.estimatedSize = estimatedSize;
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
-    
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public NetStatus getStatus() {
         return status;
     }
-    
+
     public void setStatus(NetStatus status) {
         this.status = status;
-        this.updatedAt = LocalDateTime.now();
     }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+
+    public String getDescription() {
+        return description;
     }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-    
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+
+    public void setDescription(String description) {
+        this.description = description;
     }
     
     public Person getReporter() {
         return reporter;
     }
-    
+
     public void setReporter(Person reporter) {
         this.reporter = reporter;
     }
-    
+
     public Person getRetriever() {
         return retriever;
     }
-    
+
     public void setRetriever(Person retriever) {
         this.retriever = retriever;
     }
-    
-    public String getLocationString() {
-        return String.format("%.6f, %.6f", latitude, longitude);
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = new Date();
     }
 }

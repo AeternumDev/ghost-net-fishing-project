@@ -4,9 +4,9 @@
  */
 package com.sheasepherd.ghost.net.fishing.services;
 
-import com.sheasepherd.ghostnet.entity.GhostNet;
-import com.sheasepherd.ghostnet.entity.NetStatus;
-import com.sheasepherd.ghostnet.entity.Person;
+import com.sheasepherd.ghost.net.fishing.entities.GhostNet;
+import com.sheasepherd.ghost.net.fishing.enums.NetStatus; // Corrected import
+import com.sheasepherd.ghost.net.fishing.entities.Person; // Corrected import
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

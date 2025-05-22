@@ -4,8 +4,8 @@
  */
 package com.sheasepherd.ghost.net.fishing.beans;
 
-import com.sheasepherd.ghostnet.entity.GhostNet;
-import com.sheasepherd.ghostnet.service.GhostNetService;
+import com.sheasepherd.ghost.net.fishing.entities.GhostNet;
+import com.sheasepherd.ghost.net.fishing.services.GhostNetService;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.faces.application.FacesMessage;
