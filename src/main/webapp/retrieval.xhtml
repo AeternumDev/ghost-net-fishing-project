@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+<h:head>
+    <title>Bergung verwalten - Ghost Net Fishing</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background-color: #2c5aa0; color: white; padding: 20px; margin-bottom: 20px; }
+        .navigation { margin-bottom: 20px; }
+        .navigation a { margin-right: 15px; padding: 10px; background-color: #f0f0f0; text-decoration: none; }
+        .navigation a:hover { background-color: #ddd; }
+        .section { margin-bottom: 30px; }
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .table th { background-color: #f2f2f2; }
+        .button { padding: 5px 10px; background-color: #2c5aa0; color: white; border: none; cursor: pointer; margin: 2px; }
+        .button:hover { background-color: #1e3d6f; }
+        .button-danger { background-color: #d9534f; }
+        .button-danger:hover { background-color: #c9302c; }
+        .button-success { background-color: #5cb85c; }
+        .button-success:hover { background-color: #449d44; }
+        .form-inline { display: inline-block; margin-right: 10px; }
+        .form-inline input { padding: 4px; margin: 0 5px; }
+        .messages { margin-bottom: 20px; }
+        .success { color: green; padding: 10px; background-color: #dff0d8; }
+        .error { color: red; padding: 10px; background-color: #f2dede; }
+    </style>
+</h:head>
+
+<h:body>
+    <div class="header">
+        <h1>Bergung verwalten</h1>
+    </div>
+    
+    <div class="navigation">
+        <h:link value="Startseite" outcome="index" />
+        <h:link value="Geisternetz melden" outcome="report" />
+        <h:link value="Bergung verwalten" outcome="retrieval" />
+    </div>
+    
+    <h:messages globalOnly="true" showDetail="true" showSummary="true" 
+               infoClass="success" errorClass="error" />
+    
+    <div class="section">
+        <h2>Verfügbare Geisternetze (zu bergen)</h2>
+        
+        <h:form rendered="#{not empty retrievalBean.availableNets}">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Koordinaten</th>
+                        <th>Größe</th>
+                        <th>Gemeldet am</th>
+                        <th>Melder</th>
+                        <th>Aktion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ui:repeat value="#{retrievalBean.availableNets}" var="net">
+                        <tr>
+                            <td>#{net.id}</td>
+                            <td>#{net.locationString}</td>
+                            <td>#{net.estimatedSize}</td>
+                            <td>
+                                <h:outputText value="#{net.createdAt}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+                                </h:outputText>
+                            </td>
+                            <td>
+                                <h:outputText value="#{net.reporter.name}" rendered="#{net.reporter != null}" />
+                                <h:outputText value="Anonym" rendered="#{net.reporter == null}" />
+                            </td>
+                            <td>
+                                <div class="form-inline">
+                                    <h:inputText value="#{retrievalBean.retrieverName}" 
+                                               placeholder="Name" size="15" />
+                                    <h:inputText value="#{retrievalBean.retrieverPhone}" 
+                                               placeholder="Telefon" size="15" />
+                                    <h:commandButton value="Übernehmen" 
+                                                   action="#{retrievalBean.assignRetriever(net.id)}" 
+                                                   styleClass="button" />
+                                </div>
+                                <br/>
+                                <h:commandButton value="Als verschollen markieren" 
+                                               action="#{retrievalBean.markAsLost(net.id)}" 
+                                               styleClass="button button-danger"
+                                               onclick="return confirm('Wirklich als verschollen markieren?')" />
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </tbody>
+            </table>
+        </h:form>
+        
+        <h:outputText value="Keine Geisternetze zu bergen verfügbar." 
+                     rendered="#{empty retrievalBean.availableNets}" />
+    </div>
+    
+    <div class="section">
+        <h2>Netze in Bergung</h2>
+        
+        <h:form rendered="#{not empty retrievalBean.netsInRetrieval}">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Koordinaten</th>
+                        <th>Größe</th>
+                        <th>Berger</th>
+                        <th>Telefon</th>
+                        <th>Bergung seit</th>
+                        <th>Aktion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ui:repeat value="#{retrievalBean.netsInRetrieval}" var="net">
+                        <tr>
+                            <td>#{net.id}</td>
+                            <td>#{net.locationString}</td>
+                            <td>#{net.estimatedSize}</td>
+                            <td>#{net.retriever.name}</td>
+                            <td>#{net.retriever.phoneNumber}</td>
+                            <td>
+                                <h:outputText value="#{net.updatedAt}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy HH:mm" />
+                                </h:outputText>
+                            </td>
+                            <td>
+                                <h:commandButton value="Als geborgen markieren" 
+                                               action="#{retrievalBean.markAsRetrieved(net.id)}" 
+                                               styleClass="button button-success" />
+                                <br/>
+                                <h:commandButton value="Als verschollen markieren" 
+                                               action="#{retrievalBean.markAsLost(net.id)}" 
+                                               styleClass="button button-danger"
+                                               onclick="return confirm('Wirklich als verschollen markieren?')" />
+                            </td>
+                        </tr>
+                    </ui:repeat>
+                </tbody>
+            </table>
+        </h:form>
+        
+        <h:outputText value="Keine Netze in Bergung." 
+                     rendered="#{empty retrievalBean.netsInRetrieval}" />
+    </div>
+    
+    <div class="section">
+        <h:form>
+            <h:commandButton value="Aktualisieren" action="#{retrievalBean.loadNets}" 
+                           styleClass="button" />
+        </h:form>
+    </div>
+    
+</h:body>
+</html>
