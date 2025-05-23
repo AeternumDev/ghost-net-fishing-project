@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<f:view locale="en" />
+<h:head>
+    <title>Geisternetz melden</title>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css" />
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            background-color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+        }
+
+        .form-header {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 6px;
+            display: block;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .form-actions .ui-button {
+            margin: 0 12px;
+            padding: 12px 22px;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .ui-panel {
+            border-radius: 10px !important;
+            background-color: #f9f9f9 !important;
+            padding: 20px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .ui-inputfield, .ui-selectonemenu {
+            width: 100% !important;
+            border-radius: 6px !important;
+        }
+
+        .ui-button-success {
+            background-color: #27ae60 !important;
+            border: none !important;
+        }
+
+        .ui-button-danger {
+            background-color: #c0392b !important;
+            border: none !important;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="5000" />
+
+    <div class="form-container">
+        <div class="form-header">📌 Geisternetz melden</div>
+
+        <h:form id="meldendePersonForm">
+            <p:panel header="Meldende Person">
+                <div class="form-group">
+                    <label for="name">👤 Name:</label>                    <p:inputText id="name" value="#{marineNetController.meldendePerson.name}"
+                                 disabled="#{marineNetController.anonymMelden}"
+                                 required="#{!marineNetController.anonymMelden}"
+                                 requiredMessage="Name ist erforderlich, wenn nicht anonym gemeldet wird."
+                                 placeholder="Max Mustermann" />
+                    <p:message for="name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="telefonnummer">📞 Telefonnummer:</label>                    <p:inputText id="telefonnummer" value="#{marineNetController.meldendePerson.telefonnummer}"
+                                 disabled="#{marineNetController.anonymMelden}"
+                                 placeholder="+49 123 456789" />
+                </div>
+
+                <div class="form-group">                    <p:selectBooleanCheckbox id="anonym" value="#{marineNetController.anonymMelden}">
+                        <p:ajax listener="#{marineNetController.toggleAnonymMelden}" update="name telefonnummer" />
+                    </p:selectBooleanCheckbox>
+                    <label for="anonym">🔒 Anonym melden</label>
+                </div>
+            </p:panel>
+
+            <p:panel header="Geisternetz-Daten">
+                <div class="form-group">
+                    <label for="latitude">🌍 Breitengrad:</label>
+                    <p:inputNumber id="latitude" value="#{marineNetController.geisternetz.latitude}" required="true"
+                                   requiredMessage="Breitengrad ist erforderlich"
+                                   decimalPlaces="6"
+                                   placeholder="48.137154" />
+                    <p:message for="latitude" />
+                </div>
+
+                <div class="form-group">
+                    <label for="longitude">📍 Längengrad:</label>
+                    <p:inputNumber id="longitude" value="#{marineNetController.geisternetz.longitude}" required="true"
+                                   requiredMessage="Längengrad ist erforderlich"
+                                   decimalPlaces="6"
+                                   placeholder="11.576124" />
+                    <p:message for="longitude" />
+                </div>
+
+                <div class="form-group">
+                    <label for="groesse">📏 Größe (m²):</label>
+                    <p:inputNumber id="groesse" value="#{marineNetController.geisternetz.groesse}" required="true"
+                                   requiredMessage="Größe ist erforderlich"
+                                   placeholder="100" />
+                    <p:message for="groesse" />
+                </div>
+
+                <div class="form-group">
+                    <label for="beschreibung">📝 Beschreibung:</label>
+                    <p:inputTextarea id="beschreibung" value="#{marineNetController.geisternetz.beschreibung}" rows="4"
+                                     placeholder="Kurze Beschreibung eingeben..." />
+                </div>
+            </p:panel>
+
+            <div class="form-actions">
+                <p:commandButton value="🚀 Melden"
+                                 actionListener="#{marineNetController.meldeGeisternetz}"
+                                 process="@form"
+                                 update="messages"
+                                 styleClass="ui-button-success"
+                                 ajax="false" />
+
+                <p:button value="⬅️ Zurück" outcome="index.xhtml"
+                          styleClass="ui-button-danger" />
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

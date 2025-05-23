@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<f:view locale="en" />
+<h:head>
+    <title>Geisternetz melden</title>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .form-header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #495057;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .form-actions .ui-button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="5000" />
+
+    <div class="form-container">
+        <div class="form-header">Geisternetz melden</div>
+
+        <h:form id="meldendePersonForm">
+            <p:panel header="Meldende Person" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <p:inputText id="name" value="#{geisternetzBean.meldendePerson.name}"
+                                 disabled="#{geisternetzBean.anonymMelden}"
+                                 required="#{!geisternetzBean.anonymMelden}"
+                                 requiredMessage="Name ist erforderlich, wenn nicht anonym gemeldet wird." />
+                    <p:message for="name" />
+                </div>
+
+                <div class="form-group">
+                    <label for="telefonnummer">Telefonnummer:</label>
+                    <p:inputText id="telefonnummer" value="#{geisternetzBean.meldendePerson.telefonnummer}"
+                                 disabled="#{geisternetzBean.anonymMelden}" />
+                </div>
+
+                <div class="form-group">
+                    <p:selectBooleanCheckbox id="anonym" value="#{geisternetzBean.anonymMelden}">
+                        <p:ajax listener="#{geisternetzBean.toggleAnonymMelden}" update="name telefonnummer" />
+                    </p:selectBooleanCheckbox>
+                    <label for="anonym">Anonym melden</label>
+                </div>
+            </p:panel>
+
+            <p:panel header="Geisternetz-Daten" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label for="latitude">Breitengrad:</label>
+                    <p:inputNumber id="latitude" value="#{geisternetzBean.geisternetz.latitude}" required="true"
+                                   requiredMessage="Breitengrad ist erforderlich"
+                                   decimalPlaces="6" />
+                    <p:message for="latitude" />
+                </div>
+
+                <div class="form-group">
+                    <label for="longitude">Längengrad:</label>
+                    <p:inputNumber id="longitude" value="#{geisternetzBean.geisternetz.longitude}" required="true"
+                                   requiredMessage="Längengrad ist erforderlich"
+                                   decimalPlaces="6" />
+                    <p:message for="longitude" />
+                </div>
+
+                <div class="form-group">
+                    <label for="groesse">Größe (m²):</label>
+                    <p:inputNumber id="groesse" value="#{geisternetzBean.geisternetz.groesse}" required="true"
+                                   requiredMessage="Größe ist erforderlich" />
+                    <p:message for="groesse" />
+                </div>
+
+                <div class="form-group">
+                    <label for="beschreibung">Beschreibung:</label>
+                    <p:inputTextarea id="beschreibung" value="#{geisternetzBean.geisternetz.beschreibung}" />
+                </div>
+            </p:panel>
+
+            <div class="form-actions">
+                <p:commandButton value="Melden"
+                                 actionListener="#{geisternetzBean.meldeGeisternetz}"
+                                 process="@form"
+                                 update="messages"
+                                 ajax="false" />
+                <p:button value="Zurück" outcome="index.xhtml" />
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

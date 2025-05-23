@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="https://jakarta.ee/xml/ns/jakartaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                                  https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_4_0.xsd"
+              version="4.0">
+
+    <!-- Konfiguriere globale JSF-Parameter -->
+    <application>
+        <!-- Unterstützte Sprachen -->
+        <locale-config>
+            <default-locale>de</default-locale>
+            <supported-locale>en</supported-locale>
+        </locale-config>
+    </application>
+
+    <!-- Konverter für BergendePerson hinzufügen -->
+    <converter>
+        <converter-id>bergendePersonConverter</converter-id>
+        <converter-class>ghostnetfishing.converter.BergendePersonConverter</converter-class>
+    </converter>
+
+</faces-config>

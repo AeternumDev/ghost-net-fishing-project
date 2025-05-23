@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<f:view locale="en" />
+<h:head>
+    <title>Ghost Net Fishing</title>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css" />
+</h:head>
+
+<h:body>
+
+    <p:growl id="messages" showDetail="true" sticky="false" />
+
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+        <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+        <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+    </p:confirmDialog>
+
+    <h1 style="text-align: center; font-size: 24px; color: #2c3e50;">Ghost Net Fishing - Verwaltung</h1>
+
+    <h:form id="geisternetzForm">
+        <p:panel header="Geisternetz-Verwaltung" style="margin-bottom: 20px;">
+            <p:button value="Meldende Personen"
+                      icon="pi pi-users"
+                      outcome="meldendePerson.xhtml" />
+
+            <p:button value="Bergende Personen"
+                      icon="pi pi-user-check"
+                      outcome="bergendePerson.xhtml" />
+
+            <p:button value="Kartenansicht"
+                      icon="pi pi-map"
+                      outcome="karte.xhtml"
+                      style="margin-left: 10px;" />
+        </p:panel>
+
+        <p:dataTable id="geisternetzTable" var="netz"
+                     value="#{geisternetzBean.alleGeisternetze}"
+                     paginator="true" rows="10" responsiveLayout="scroll"
+                     widgetVar="geisternetzTable"
+                     selectionMode="single"
+                     selection="#{geisternetzBean.selectedGeisternetz}"
+                     rowKey="#{netz.id}">
+
+            <p:column headerText="ID" filterBy="#{netz.id}" filterMatchMode="equals">
+                <h:outputText value="#{netz.id}" />
+            </p:column>
+
+            <p:column headerText="Breitengrad" filterBy="#{netz.latitude}" filterMatchMode="contains">
+                <h:outputText value="#{netz.latitude}" />
+            </p:column>
+
+            <p:column headerText="Längengrad" filterBy="#{netz.longitude}" filterMatchMode="contains">
+                <h:outputText value="#{netz.longitude}" />
+            </p:column>
+
+            <p:column headerText="Größe (m²)" filterBy="#{netz.groesse}" filterMatchMode="equals">
+                <h:outputText value="#{netz.groesse}" />
+            </p:column>
+
+            <p:column headerText="Status" filterBy="#{netz.status}" filterMatchMode="equals">
+                <h:outputText value="#{netz.status}" />
+            </p:column>
+
+            <p:column headerText="Aktionen">
+                <p:commandButton icon="pi pi-pencil" title="Bearbeiten"
+                                 actionListener="#{geisternetzBean.setSelectedGeisternetz(netz)}"
+                                 update=":geisternetzForm :editDialog"
+                                 oncomplete="PF('editDialog').show()" />
+
+                <p:commandButton icon="pi pi-trash" title="Löschen"
+                                 actionListener="#{geisternetzBean.loescheGeisternetz(netz)}"
+                                 update="geisternetzTable messages"
+                                 styleClass="ui-button-danger"
+                                 process="@this">
+                    <p:confirm header="Bestätigung" message="Möchtest du dieses Geisternetz wirklich löschen?" icon="pi pi-exclamation-triangle" />
+                </p:commandButton>
+            </p:column>
+        </p:dataTable>
+    </h:form>
+
+    <!-- Bearbeitungsdialog -->
+    <p:dialog id="editDialog" widgetVar="editDialog" header="Geisternetz bearbeiten"
+              modal="true" resizable="false" width="800" height="600">
+
+        <h:form id="editForm">
+            <p:panelGrid columns="1" style="width:100%; font-size: 16px;" columnClasses="label-column,value-column">
+
+                <!-- NICHT BEARBEITBARE FELDER -->
+                <p:outputLabel value="ID:" style="font-weight: bold; font-size: 18px;" />
+                <h:outputText value="#{geisternetzBean.selectedGeisternetz.id}" style="font-size: 18px; color: #666;" />
+
+                <p:outputLabel value="Meldende Person:" style="font-weight: bold; font-size: 18px;" />
+                <h:outputText value="#{geisternetzBean.selectedGeisternetz.meldendePerson.name}"
+                              rendered="#{not empty geisternetzBean.selectedGeisternetz.meldendePerson}"
+                              style="font-size: 18px; color: #666;" />
+
+                <p:outputLabel value="Bergende Person:" style="font-weight: bold; font-size: 18px;" />
+                <h:outputText value="#{geisternetzBean.selectedGeisternetz.bergendePerson.name}"
+                              rendered="#{not empty geisternetzBean.selectedGeisternetz.bergendePerson}"
+                              style="font-size: 18px; color: #666;" />
+
+                <!-- BEARBEITBARE FELDER -->
+                <p:outputLabel value="Größe (m²):" style="font-weight: bold; font-size: 18px;" />
+                <p:inputNumber value="#{geisternetzBean.selectedGeisternetz.groesse}" style="width:100%; font-size: 18px;" />
+
+                <p:outputLabel value="Status:" style="font-weight: bold; font-size: 18px;" />
+                <p:selectOneMenu value="#{geisternetzBean.selectedGeisternetz.status}" style="width:100%; font-size: 18px;">
+                    <f:selectItems value="#{geisternetzBean.statusOptions}" var="status"
+                                   itemValue="#{status}" itemLabel="#{status}" />
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Beschreibung:" style="font-weight: bold; font-size: 18px;" />
+                <p:inputTextarea value="#{geisternetzBean.selectedGeisternetz.beschreibung}"
+                                 rows="5" cols="50" style="width:100%; font-size: 18px;" />
+
+                <p:outputLabel value="Breitengrad (Latitude):" style="font-weight: bold; font-size: 18px;" />
+                <p:inputNumber value="#{geisternetzBean.selectedGeisternetz.latitude}" decimalPlaces="6"
+                               style="width:100%; font-size: 18px;" />
+
+                <p:outputLabel value="Längengrad (Longitude):" style="font-weight: bold; font-size: 18px;" />
+                <p:inputNumber value="#{geisternetzBean.selectedGeisternetz.longitude}" decimalPlaces="6"
+                               style="width:100%; font-size: 18px;" />
+            </p:panelGrid>
+
+            <!-- SPEICHERN UND ABBRECHEN BUTTONS -->
+            <div style="margin-top: 20px; text-align: center;">
+                <p:commandButton value="Speichern"
+                                 actionListener="#{geisternetzBean.speichernOderAktualisieren}"
+                                 update="geisternetzForm messages"
+                                 process="editForm"
+                                 styleClass="ui-button-success"
+                                 style="font-size: 18px; padding: 10px 20px;"
+                                 oncomplete="PF('editDialog').hide()" />
+
+                <p:commandButton value="Abbrechen"
+                                 process="@this"
+                                 styleClass="ui-button-secondary"
+                                 style="font-size: 18px; padding: 10px 20px; margin-left: 20px;"
+                                 oncomplete="PF('editDialog').hide()" />
+            </div>
+        </h:form>
+
+    </p:dialog>
+</h:body>
+</html>

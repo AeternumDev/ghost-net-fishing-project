@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:view locale="en" />
+<h:head>
+    <title>Ghost Net Fishing</title>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css" />
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .ui-button {
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-container input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    </style>
+</h:head>
+
+<h:body>
+
+    <p:growl id="messages" showDetail="true" sticky="false" />
+
+    <!-- ✅ Globaler Bestätigungsdialog für Löschen -->
+    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="350">
+        <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+        <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+    </p:confirmDialog>
+
+    <h1>📍 Geisternetz-Verwaltung</h1>
+
+    <div class="button-container">        <p:button value="Meldende Personen"
+                  icon="pi pi-users"
+                  outcome="spotter.xhtml"
+                  styleClass="ui-button ui-button-primary" />
+
+        <p:button value="Bergende Personen"
+                  icon="pi pi-id-card"
+                  outcome="recoveryDiver.xhtml"
+                  styleClass="ui-button ui-button-primary" />
+
+        <p:button value="Kartenansicht"
+                  icon="pi pi-map"
+                  outcome="oceanMap.xhtml"
+                  styleClass="ui-button ui-button-primary" />
+
+        <p:commandButton value="🔄 Tabelle aktualisieren" icon="pi pi-refresh"
+                         update=":geisternetzForm:geisternetzTable messages"
+                         styleClass="ui-button ui-button-secondary"/>
+    </div>
+
+    <h:form id="geisternetzForm">
+        <div class="table-container">            <p:dataTable id="geisternetzTable" var="netz"
+                         value="#{marineNetController.alleGeisternetze}"
+                         paginator="true" rows="10" responsiveLayout="scroll"
+                         selectionMode="single"
+                         selection="#{marineNetController.selectedGeisternetz}"
+                         rowKey="#{netz.id}">
+
+                <p:column headerText="ID" filterBy="#{netz.id}" filterMatchMode="exact">
+                    <h:outputText value="#{netz.id}" />
+                </p:column>
+
+                <p:column headerText="Breitengrad" filterBy="#{netz.latitude}" filterMatchMode="contains">
+                    <h:outputText value="#{netz.latitude}" />
+                </p:column>
+
+                <p:column headerText="Längengrad" filterBy="#{netz.longitude}" filterMatchMode="contains">
+                    <h:outputText value="#{netz.longitude}" />
+                </p:column>
+
+                <p:column headerText="Größe (m²)" filterBy="#{netz.groesse}" filterMatchMode="exact">
+                    <h:outputText value="#{netz.groesse}" />
+                </p:column>
+
+                <p:column headerText="Status" filterBy="#{netz.status}" filterMatchMode="exact">
+                    <h:outputText value="#{netz.status}" />
+                </p:column>
+
+                <p:column headerText="Aktionen">                    <p:commandButton icon="pi pi-pencil" title="Bearbeiten"
+                                     actionListener="#{marineNetController.setSelectedGeisternetz(netz)}"
+                                     update=":editForm"
+                                     oncomplete="PF('editDialog').show()" />                    <p:commandButton icon="pi pi-trash" title="Löschen"
+                                     action="#{marineNetController.loescheGeisternetz(netz)}"
+                                     update=":geisternetzForm:geisternetzTable messages"
+                                     styleClass="ui-button-danger"
+                                     process="@this">
+                        <p:confirm header="Bestätigung"
+                                   message="Möchtest du dieses Geisternetz wirklich löschen?"
+                                   icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </div>
+    </h:form>
+
+    <p:dialog id="editDialog" widgetVar="editDialog" header="Geisternetz bearbeiten"
+              modal="true" resizable="false" width="900px" height="750px">
+
+        <h:form id="editForm">
+            <p:panelGrid columns="2" style="width:100%; font-size: 16px;">
+
+                <f:facet name="header">
+                    <h:outputText value="📌 Geisternetz-Details"
+                                  style="font-weight: bold; font-size: 22px;"/>
+                </f:facet>                <p:outputLabel value="ID:" style="font-weight: bold;" />
+                <h:outputText value="#{marineNetController.selectedGeisternetz.id}" />
+
+                <p:outputLabel value="Größe (m²):" style="font-weight: bold;" />
+                <p:inputNumber value="#{marineNetController.selectedGeisternetz.groesse}" style="width:100%;" />
+
+                <p:outputLabel value="Status:" style="font-weight: bold;" />
+                <p:selectOneMenu value="#{marineNetController.selectedGeisternetz.status}" style="width:100%;">
+                    <f:selectItems value="#{marineNetController.statusOptions}" var="status"
+                                   itemValue="#{status}" itemLabel="#{status}" />
+                </p:selectOneMenu>                <p:outputLabel value="Beschreibung:" style="font-weight: bold;" />
+                <p:inputTextarea value="#{marineNetController.selectedGeisternetz.beschreibung}"
+                                 rows="3" cols="50" style="width:100%;" />
+
+                <p:outputLabel value="Breitengrad:" style="font-weight: bold;" />
+                <p:inputNumber value="#{marineNetController.selectedGeisternetz.latitude}" decimalPlaces="6"
+                               style="width:100%;" />
+
+                <p:outputLabel value="Längengrad:" style="font-weight: bold;" />
+                <p:inputNumber value="#{marineNetController.selectedGeisternetz.longitude}" decimalPlaces="6"
+                               style="width:100%;" />                <p:outputLabel value="Bergende Person:" style="font-weight: bold;" />
+                <h:outputText value="#{marineNetController.selectedGeisternetz.bergendePerson != null ? marineNetController.selectedGeisternetz.bergendePerson.name : 'Keine'}" />
+
+                <p:outputLabel value="Meldende Person:" style="font-weight: bold;" />
+                <h:outputText value="#{marineNetController.selectedGeisternetz.meldendePerson != null ? marineNetController.selectedGeisternetz.meldendePerson.name : 'Keine'}" />
+
+            </p:panelGrid>
+
+            <div style="text-align: center; margin-top: 20px;">                <p:commandButton value="Speichern"
+                                 actionListener="#{marineNetController.speichernOderAktualisieren}"
+                                 update=":geisternetzForm:geisternetzTable messages"
+                                 process="editForm"
+                                 styleClass="ui-button-success"
+                                 oncomplete="PF('editDialog').hide()" />
+
+                <p:commandButton value="Abbrechen"
+                                 process="@this"
+                                 styleClass="ui-button-secondary"
+                                 oncomplete="PF('editDialog').hide()" />
+            </div>
+        </h:form>
+    </p:dialog>
+</h:body>
+</html>

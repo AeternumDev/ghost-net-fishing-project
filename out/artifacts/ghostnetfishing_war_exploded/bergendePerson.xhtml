@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Bergende Person - Geisternetze</title>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css"/>
+</h:head>
+
+<h:body>
+    <p:growl id="messages" showDetail="true" life="5000"/>
+
+    <!-- Hauptbereich für die Verwaltung der bergenden Personen -->
+    <h:form id="bergendePersonForm">
+        <h2>Geisternetze reservieren</h2>
+
+        <!-- Auswahl einer bergenden Person -->
+        <p:selectOneMenu id="bergendePersonDropdown"
+                         value="#{geisternetzBean.selectedBergendePersonId}">
+            <f:selectItem itemLabel="Bitte wählen..." itemValue="#{null}" noSelectionOption="true"/>
+            <f:selectItems value="#{geisternetzBean.alleBergendenPersonen}"
+                           var="p"
+                           itemLabel="#{p.name}"
+                           itemValue="#{p.id}"/>
+        </p:selectOneMenu>
+
+        <!-- Liste der freien Geisternetze -->
+        <p:dataTable id="freieNetze" var="netz"
+                     value="#{geisternetzBean.geisternetzeGemeldet}"
+                     paginator="true" rows="5"
+                     emptyMessage="Keine freien Geisternetze verfügbar."
+                     responsiveLayout="scroll">
+
+            <p:column headerText="ID">
+                <h:outputText value="#{netz.id}"/>
+            </p:column>
+
+            <p:column headerText="Koordinaten">
+                <h:outputText value="#{netz.latitude}, #{netz.longitude}"/>
+            </p:column>
+
+            <p:column headerText="Status">
+                <p:tag value="#{netz.status}" severity="info"/>
+            </p:column>
+
+            <p:column headerText="Aktion">
+                <p:commandButton value="Reservieren"
+                                 action="#{geisternetzBean.setStatusToBergungBevorstehend(netz)}"
+                                 update="@form :reservierteNetzeWrapper"
+                                 rendered="#{netz.status == 'GEMELDET'}"
+                                 styleClass="ui-button-success"/>
+            </p:column>
+        </p:dataTable>
+    </h:form>
+
+    <!-- Liste der reservierten Geisternetze mit OutputPanel für sicheres AJAX-Update -->
+    <h2>Reservierte Geisternetze</h2>
+
+    <p:outputPanel id="reservierteNetzeWrapper">
+        <h:form id="reservierteNetzeForm">
+            <p:dataTable id="reservierteNetze" var="netz"
+                         value="#{geisternetzBean.geisternetzeReserviert}"
+                         paginator="true" rows="5"
+                         emptyMessage="Keine reservierten Geisternetze."
+                         responsiveLayout="scroll">
+
+                <p:column headerText="ID">
+                    <h:outputText value="#{netz.id}"/>
+                </p:column>
+
+                <p:column headerText="Koordinaten">
+                    <h:outputText value="#{netz.latitude}, #{netz.longitude}"/>
+                </p:column>
+
+                <p:column headerText="Status">
+                    <p:tag value="#{netz.status}" severity="warning"/>
+                </p:column>
+
+                <p:column headerText="Aktion">
+                    <p:commandButton value="Als geborgen melden"
+                                     action="#{geisternetzBean.setStatusToGeborgen(netz)}"
+                                     update=":reservierteNetzeWrapper"
+                                     rendered="#{netz.status == 'BERGUNG_BEVORSTEHEND'}"
+                                     styleClass="ui-button-primary"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </p:outputPanel>
+
+    <!-- Formular zum Hinzufügen einer neuen bergenden Person -->
+    <h:form id="addPersonForm">
+        <p:panel header="Neue Bergende Person">
+            <h:panelGrid columns="2" cellpadding="5">
+                <p:outputLabel for="newPersonName" value="Name"/>
+                <p:inputText id="newPersonName"
+                             value="#{geisternetzBean.selectedBergendePerson.name}"
+                             required="true" requiredMessage="Bitte Namen eingeben."/>
+
+                <p:outputLabel for="newPersonEmail" value="E-Mail"/>
+                <p:inputText id="newPersonEmail"
+                             value="#{geisternetzBean.selectedBergendePerson.email}"/>
+
+                <p:outputLabel for="newPersonTel" value="Telefonnummer"/>
+                <p:inputText id="newPersonTel"
+                             value="#{geisternetzBean.selectedBergendePerson.telefonnummer}"
+                             required="true" requiredMessage="Bitte Telefonnummer eingeben."/>
+            </h:panelGrid>
+
+            <p:commandButton value="Person hinzufügen"
+                             action="#{geisternetzBean.addBergendePerson()}"
+                             update="@form"
+                             styleClass="ui-button-primary"/>
+        </p:panel>
+    </h:form>
+</h:body>
+</html>
