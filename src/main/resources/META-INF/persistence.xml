@@ -6,7 +6,7 @@
     
     <persistence-unit name="ghost-net-pu" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>jdbc/ghostnet</jta-data-source>
+        <jta-data-source>java:comp/env/jdbc/meineDb</jta-data-source>
         
         <class>com.sheasepherd.ghost.net.fishing.entities.GhostNet</class>
         <class>com.sheasepherd.ghost.net.fishing.entities.Person</class>

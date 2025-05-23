@@ -39,5 +39,29 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+
+    <!-- Weld (CDI) Listener -->
+    <listener>
+        <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+    </listener>
+
+    <!-- Jersey (JAX-RS) Servlet -->
+    <servlet>
+        <servlet-name>jakarta.ws.rs.core.Application</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jakarta.ws.rs.Application</param-name>
+            <param-value>com.sheasepherd.ghost.net.fishing.JakartaRestConfiguration</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>com.sheasepherd.ghost.net.fishing.resources</param-value> <!-- Package mit deinen JAX-RS Ressourcen -->
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>jakarta.ws.rs.core.Application</servlet-name>
+        <url-pattern>/resources/*</url-pattern> <!-- Muss mit @ApplicationPath in JakartaRestConfiguration übereinstimmen -->
+    </servlet-mapping>
     
 </web-app>
