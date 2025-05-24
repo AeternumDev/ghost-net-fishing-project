@@ -123,6 +123,18 @@ public class GhostNet {
     public void setRetriever(Person retriever) {
         this.retriever = retriever;
     }
+    
+    // Helper methods for UI display
+    public String getLocationString() {
+        if (latitude != null && longitude != null) {
+            return String.format("%.6f, %.6f", latitude, longitude);
+        }
+        return "Nicht verfügbar";
+    }
+    
+    public String getEstimatedSize() {
+        return description != null ? description : "Nicht angegeben";
+    }
 
     @PreUpdate
     protected void onUpdate() {

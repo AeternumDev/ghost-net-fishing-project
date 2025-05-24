@@ -4,16 +4,19 @@ import ghostnetfishing.model.AbandonedNet;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceUnit;
 import java.io.Serializable;
 import java.util.List;
 
 @ApplicationScoped
 public class AbandonedNetDAO implements Serializable {
 
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("ghostnet_fishing");    public void save(AbandonedNet abandonedNet) {
+    @PersistenceUnit(unitName = "ghostnet_fishing")
+    private EntityManagerFactory emf;
+
+    public void save(AbandonedNet abandonedNet) {
         System.out.println("DEBUG: Starting save operation for AbandonedNet with ID: " + abandonedNet.getId());
-        EntityManager em = emf.createEntityManager(); // EntityManager hier erzeugen
+        EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             System.out.println("DEBUG: Persisting AbandonedNet: " + abandonedNet);
@@ -23,18 +26,17 @@ public class AbandonedNetDAO implements Serializable {
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
-                System.err.println("ERROR: Transaction rolled back due to an error.");
             }
             System.err.println("ERROR: Exception during save operation: " + e.getMessage());
             throw e;
         } finally {
             em.close();
-            System.out.println("DEBUG: EntityManager closed after save operation.");
-        }    }
+        }
+    }
 
     public void update(AbandonedNet abandonedNet) {
         System.out.println("DEBUG: Starting update operation for AbandonedNet with ID: " + abandonedNet.getId());
-        EntityManager em = emf.createEntityManager(); // EntityManager hier erzeugen
+        EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             System.out.println("DEBUG: Merging AbandonedNet: " + abandonedNet);
@@ -44,15 +46,15 @@ public class AbandonedNetDAO implements Serializable {
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
-                System.err.println("ERROR: Transaction rolled back due to an error.");
             }
             System.err.println("ERROR: Exception during update operation: " + e.getMessage());
             throw e;
         } finally {
             em.close();
-            System.out.println("DEBUG: EntityManager closed after update operation.");
         }
-    }    public void delete(AbandonedNet abandonedNet) {
+    }
+
+    public void delete(AbandonedNet abandonedNet) {
         System.out.println("DEBUG: Starting delete operation for AbandonedNet with ID: " + abandonedNet.getId());
         EntityManager em = emf.createEntityManager();
         try {
@@ -65,15 +67,15 @@ public class AbandonedNetDAO implements Serializable {
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
-                System.err.println("ERROR: Transaction rolled back due to an error.");
             }
             System.err.println("ERROR: Exception during delete operation: " + e.getMessage());
             throw e;
         } finally {
             em.close();
-            System.out.println("DEBUG: EntityManager closed after delete operation.");
         }
-    }    public AbandonedNet findById(Long id) {
+    }
+
+    public AbandonedNet findById(Long id) {
         System.out.println("DEBUG: Starting findById operation for AbandonedNet with ID: " + id);
         EntityManager em = emf.createEntityManager();
         try {
@@ -82,9 +84,10 @@ public class AbandonedNetDAO implements Serializable {
             return result;
         } finally {
             em.close();
-            System.out.println("DEBUG: EntityManager closed after findById operation.");
         }
-    }    public List<AbandonedNet> findAll() {
+    }
+
+    public List<AbandonedNet> findAll() {
         System.out.println("DEBUG: Starting findAll operation.");
         EntityManager em = emf.createEntityManager();
         try {
@@ -93,7 +96,6 @@ public class AbandonedNetDAO implements Serializable {
             return results;
         } finally {
             em.close();
-            System.out.println("DEBUG: EntityManager closed after findAll operation.");
         }
     }
 }

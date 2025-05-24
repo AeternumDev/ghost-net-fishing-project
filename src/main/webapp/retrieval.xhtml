@@ -36,10 +36,10 @@
     <div class="header">
         <h1>Bergung verwalten</h1>
     </div>
-    
-    <div class="navigation">
+      <div class="navigation">
         <h:link value="Startseite" outcome="index" />
-        <h:link value="Geisternetz melden" outcome="report" />
+        <h:link value="Geisternetz melden" outcome="spotter" />
+        <h:link value="Einfache Meldung" outcome="report" />
         <h:link value="Bergung verwalten" outcome="retrieval" />
     </div>
     
@@ -81,8 +81,7 @@
                                     <h:inputText value="#{retrievalBean.retrieverName}" 
                                                placeholder="Name" size="15" />
                                     <h:inputText value="#{retrievalBean.retrieverPhone}" 
-                                               placeholder="Telefon" size="15" />
-                                    <h:commandButton value="Übernehmen" 
+                                               placeholder="Telefon" size="15" />                                    <h:commandButton value="Übernehmen" 
                                                    action="#{retrievalBean.assignRetriever(net.id)}" 
                                                    styleClass="button" />
                                 </div>

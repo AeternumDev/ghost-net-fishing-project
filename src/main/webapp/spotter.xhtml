@@ -144,13 +144,15 @@
                 </div>
             </p:panel>
 
-            <div class="form-actions">
-                <p:commandButton value="🚀 Melden"
+            <div class="form-actions">                <p:commandButton value="🚀 Melden"
                                  actionListener="#{marineNetController.meldeGeisternetz}"
                                  process="@form"
                                  update="messages"
                                  styleClass="ui-button-success"
                                  ajax="false" />
+
+                <p:button value="📋 Einfache Meldung" outcome="report.xhtml"
+                          styleClass="ui-button-primary" />
 
                 <p:button value="⬅️ Zurück" outcome="index.xhtml"
                           styleClass="ui-button-danger" />

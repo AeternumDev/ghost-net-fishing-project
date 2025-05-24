@@ -1,12 +1,10 @@
 package ghostnetfishing.controller;
 
-import ghostnetfishing.dao.RecoveryDiverDAO;
 import ghostnetfishing.dao.AbandonedNetDAO;
 import ghostnetfishing.dao.SpotterDAO;
 import ghostnetfishing.model.AbandonedNet;
 import ghostnetfishing.model.NetCondition;
 import ghostnetfishing.model.Spotter;
-import ghostnetfishing.model.RecoveryDiver;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -19,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Named("marineNetController")
 @SessionScoped
 public class MarineNetController implements Serializable {
@@ -27,29 +24,21 @@ public class MarineNetController implements Serializable {
     private List<AbandonedNet> alleGeisternetze;
     private List<AbandonedNet> gefilterteGeisternetze;
     private List<String> statusOptions;
-    private List<RecoveryDiver> alleBergendenPersonen;
 
     private AbandonedNet geisternetz;
     private AbandonedNet selectedGeisternetz;
     private Spotter meldendePerson;
     private boolean anonymMelden;
-    private boolean editMode;
-
-    @Inject
-    private RecoveryDiverDAO bergendePersonDAO;
-
-    private RecoveryDiver selectedBergendePerson = new RecoveryDiver();
-
-    private Long selectedBergendePersonId;
 
     @Inject
     private AbandonedNetDAO geisternetzDAO;
 
     @Inject
-    private SpotterDAO meldendePersonDAO;    @PostConstruct
+    private SpotterDAO meldendePersonDAO;
+
+    @PostConstruct
     public void init() {
         try {
-            alleBergendenPersonen = bergendePersonDAO.findAll(); // ✅ Liste wird beim Start geladen
             selectedGeisternetz = new AbandonedNet();  // Initialisiere das Objekt, um NullPointerException zu vermeiden
 
             alleGeisternetze = geisternetzDAO.findAll();
@@ -59,15 +48,14 @@ public class MarineNetController implements Serializable {
                     .toList();
             geisternetz = new AbandonedNet();
             meldendePerson = new Spotter();
-            selectedBergendePerson = new RecoveryDiver();
             anonymMelden = false;
-            editMode = false;
 
         } catch (Exception e) {
             System.err.println("ERROR: Fehler bei der Initialisierung von MarineNetController: " + e.getMessage());
         }
-    }    public void speichernOderAktualisieren() {
+    }
 
+    public void speichernOderAktualisieren() {
         if (selectedGeisternetz == null) {
             selectedGeisternetz = new AbandonedNet();
         }
@@ -87,10 +75,11 @@ public class MarineNetController implements Serializable {
         } catch (Exception e) {
             System.err.println("ERROR: Fehler beim Speichern oder Aktualisieren: " + e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Das Geisternetz konnte nicht gespeichert werden."));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Speichern fehlgeschlagen."));
         }
-    }    public void meldeGeisternetz() {
+    }
 
+    public void meldeGeisternetz() {
         if (geisternetz == null) {
             geisternetz = new AbandonedNet();
         }
@@ -121,57 +110,9 @@ public class MarineNetController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Das Geisternetz konnte nicht gemeldet werden."));
         }
-    }    public void setStatusToBergungBevorstehend(AbandonedNet netz) {
+    }
 
-        if (selectedBergendePersonId == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Bitte eine bergende Person auswählen."));
-            return;
-        }
-
-        RecoveryDiver neuePerson = bergendePersonDAO.findById(selectedBergendePersonId);
-        if (neuePerson == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Ausgewählte Person nicht gefunden."));
-            return;
-        }
-
-        if (netz == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Geisternetz ist null."));
-            return;
-        }
-
-        netz.setBergendePerson(neuePerson);
-        netz.setStatus(NetCondition.BERGUNG_BEVORSTEHEND);
-
-        try {
-            geisternetzDAO.update(netz);
-
-            aktualisiereGeisternetzListe();
-            PrimeFaces.current().ajax().update("geisternetzForm");
-
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", "Geisternetz wurde erfolgreich der neuen Person zugewiesen."));
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Fehler beim Speichern der Änderung."));
-            e.printStackTrace();
-        }
-    }    public void setStatusToGeborgen(AbandonedNet netz) {
-        if (netz.getBergendePerson() == null) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Dieses Geisternetz wurde noch keiner bergenden Person zugewiesen."));
-            return;
-        }
-
-        netz.setStatus(NetCondition.GEBORGEN);
-        geisternetzDAO.update(netz);
-        aktualisiereGeisternetzListe();
-
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", "Geisternetz wurde als geborgen markiert."));
-    }    public void loescheGeisternetz(AbandonedNet netz) {
+    public void loescheGeisternetz(AbandonedNet netz) {
         if (netz == null) {
             System.err.println("ERROR: Das zu löschende Geisternetz ist NULL! Methode wird nicht ausgeführt.");
             return;
@@ -202,41 +143,21 @@ public class MarineNetController implements Serializable {
         alleGeisternetze = geisternetzDAO.findAll();
         gefilterteGeisternetze = alleGeisternetze;
         PrimeFaces.current().ajax().update("geisternetzForm");
-    }    private void resetForm() {
-        geisternetz = new AbandonedNet();
-        meldendePerson = new Spotter();
-        anonymMelden = false;
-        editMode = false;
     }
 
     public void toggleAnonymMelden() {
         if (anonymMelden) {
             meldendePerson = new Spotter(); // Setzt Name und Telefonnummer auf NULL
         }
-    }    public List<RecoveryDiver> getAlleBergendenPersonen() {
-        return bergendePersonDAO.findAll();
     }
 
-    public RecoveryDiver getSelectedBergendePerson() {
-        return selectedBergendePerson;
-    }
-
-    public void setSelectedBergendePerson(RecoveryDiver selectedBergendePerson) {
-        this.selectedBergendePerson = selectedBergendePerson;
-    }
-
+    // Getters and Setters
     public AbandonedNet getSelectedGeisternetz() {
         return selectedGeisternetz;
     }
 
     public void setSelectedGeisternetz(AbandonedNet selectedGeisternetz) {
         this.selectedGeisternetz = selectedGeisternetz;
-    }    public Long getSelectedBergendePersonId() {
-        return selectedBergendePersonId;
-    }
-
-    public void setSelectedBergendePersonId(Long selectedBergendePersonId) {
-        this.selectedBergendePersonId = selectedBergendePersonId;
     }
 
     public Spotter getMeldendePerson() {
@@ -252,7 +173,9 @@ public class MarineNetController implements Serializable {
 
     public List<AbandonedNet> getAlleGeisternetze() {
         return alleGeisternetze;
-    }    public List<String> getStatusOptions() {
+    }
+
+    public List<String> getStatusOptions() {
         return statusOptions;
     }
 
@@ -272,40 +195,5 @@ public class MarineNetController implements Serializable {
         return alleGeisternetze.stream()
                 .filter(netz -> netz.getStatus() == NetCondition.GEMELDET)
                 .collect(Collectors.toList());
-    }
-
-    public List<AbandonedNet> getGeisternetzeReserviert() {
-        return alleGeisternetze.stream()
-                .filter(netz -> netz.getStatus() == NetCondition.BERGUNG_BEVORSTEHEND)
-                .collect(Collectors.toList());
-    }    public void addBergendePerson() {
-        if (selectedBergendePerson == null) {
-            selectedBergendePerson = new RecoveryDiver();
-        }
-
-        if (selectedBergendePerson.getName() == null || selectedBergendePerson.getName().trim().isEmpty() ||
-                selectedBergendePerson.getTelefonnummer() == null || selectedBergendePerson.getTelefonnummer().trim().isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Bitte Name und Telefonnummer eingeben."));
-            return;
-        }
-
-        try {
-            bergendePersonDAO.save(selectedBergendePerson);
-
-            List<RecoveryDiver> aktualisierteListe = bergendePersonDAO.findAll();
-
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Erfolg", "Bergende Person erfolgreich hinzugefügt."));
-
-            selectedBergendePerson = new RecoveryDiver();
-
-            PrimeFaces.current().ajax().update("bergendePersonForm", "addPersonForm");
-
-        } catch (Exception e) {
-            System.err.println("ERROR: Fehler beim Speichern der bergenden Person: " + e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Fehler", "Fehler beim Speichern der Person."));
-        }
     }
 }

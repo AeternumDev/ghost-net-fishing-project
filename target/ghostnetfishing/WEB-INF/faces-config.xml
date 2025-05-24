@@ -9,10 +9,6 @@
         <locale-config>
             <default-locale>de</default-locale>
             <supported-locale>en</supported-locale>
-        </locale-config>
-    </application>    <converter>
-        <converter-id>recoveryDiverConverter</converter-id>
-        <converter-class>ghostnetfishing.converter.RecoveryDiverConverter</converter-class>
-    </converter>
+        </locale-config>    </application>
 
 </faces-config>

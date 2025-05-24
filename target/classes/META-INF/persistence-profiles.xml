@@ -1,0 +1,76 @@
+&lt;persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0"&gt;
+             
+    &lt;!-- Development Persistence Unit --&gt;
+    &lt;persistence-unit name="ghostnet_fishing_dev" transaction-type="RESOURCE_LOCAL"&gt;
+        &lt;provider&gt;org.hibernate.jpa.HibernatePersistenceProvider&lt;/provider&gt;
+        &lt;class&gt;ghostnetfishing.model.AbandonedNet&lt;/class&gt;
+        &lt;class&gt;ghostnetfishing.model.Spotter&lt;/class&gt;
+
+        &lt;properties&gt;
+            &lt;!-- MySQL Datenbank Verbindung für Development --&gt;
+            &lt;property name="jakarta.persistence.jdbc.url" 
+                     value="jdbc:mysql://localhost:3306/ghostnet_fishing_dev?useSSL=false&amp;amp;serverTimezone=UTC&amp;amp;allowPublicKeyRetrieval=true&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8"/&gt;
+            &lt;property name="jakarta.persistence.jdbc.user" value="ghostnet_app"/&gt;
+            &lt;property name="jakarta.persistence.jdbc.password" value="ghostnet_secure_2024!"/&gt;
+            &lt;property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/&gt;
+            
+            &lt;!-- Hibernate Einstellungen für Development --&gt;
+            &lt;property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/&gt;
+            &lt;property name="hibernate.show_sql" value="true"/&gt;
+            &lt;property name="hibernate.format_sql" value="true"/&gt;
+            &lt;property name="hibernate.use_sql_comments" value="true"/&gt;
+            
+            &lt;!-- Schema-Management: create-drop für Development --&gt;
+            &lt;property name="hibernate.hbm2ddl.auto" value="create-drop"/&gt;
+            
+            &lt;!-- Development spezifische Einstellungen --&gt;
+            &lt;property name="hibernate.generate_statistics" value="true"/&gt;
+            &lt;property name="hibernate.session.events.log" value="true"/&gt;
+        &lt;/properties&gt;
+    &lt;/persistence-unit&gt;
+    
+    &lt;!-- Production Persistence Unit --&gt;
+    &lt;persistence-unit name="ghostnet_fishing_prod" transaction-type="RESOURCE_LOCAL"&gt;
+        &lt;provider&gt;org.hibernate.jpa.HibernatePersistenceProvider&lt;/provider&gt;
+        &lt;class&gt;ghostnetfishing.model.AbandonedNet&lt;/class&gt;
+        &lt;class&gt;ghostnetfishing.model.Spotter&lt;/class&gt;
+
+        &lt;properties&gt;
+            &lt;!-- MySQL Datenbank Verbindung für Production --&gt;
+            &lt;property name="jakarta.persistence.jdbc.url" 
+                     value="jdbc:mysql://localhost:3306/ghostnet_fishing?useSSL=true&amp;amp;serverTimezone=UTC&amp;amp;useUnicode=true&amp;amp;characterEncoding=UTF-8"/&gt;
+            &lt;property name="jakarta.persistence.jdbc.user" value="ghostnet_app"/&gt;
+            &lt;property name="jakarta.persistence.jdbc.password" value="ghostnet_secure_2024!"/&gt;
+            &lt;property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/&gt;
+            
+            &lt;!-- Hibernate Einstellungen für Production --&gt;
+            &lt;property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/&gt;
+            &lt;property name="hibernate.show_sql" value="false"/&gt;
+            &lt;property name="hibernate.format_sql" value="false"/&gt;
+            
+            &lt;!-- Schema-Management: validate für Production --&gt;
+            &lt;property name="hibernate.hbm2ddl.auto" value="validate"/&gt;
+            
+            &lt;!-- Connection Pool Einstellungen --&gt;
+            &lt;property name="hibernate.connection.pool_size" value="20"/&gt;
+            &lt;property name="hibernate.connection.autocommit" value="false"/&gt;
+            
+            &lt;!-- Performance Einstellungen --&gt;
+            &lt;property name="hibernate.jdbc.batch_size" value="50"/&gt;
+            &lt;property name="hibernate.order_inserts" value="true"/&gt;
+            &lt;property name="hibernate.order_updates" value="true"/&gt;
+            &lt;property name="hibernate.jdbc.batch_versioned_data" value="true"/&gt;
+            
+            &lt;!-- Cache Einstellungen --&gt;
+            &lt;property name="hibernate.cache.use_second_level_cache" value="true"/&gt;
+            &lt;property name="hibernate.cache.use_query_cache" value="true"/&gt;
+            &lt;property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.jcache.JCacheRegionFactory"/&gt;
+            
+            &lt;!-- Logging --&gt;
+            &lt;property name="hibernate.generate_statistics" value="false"/&gt;
+        &lt;/properties&gt;
+    &lt;/persistence-unit&gt;
+&lt;/persistence&gt;

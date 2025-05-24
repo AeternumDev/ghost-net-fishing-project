@@ -42,8 +42,7 @@
     
     <h:form>
         <h2>Neues Geisternetz melden</h2>
-        
-        <div class="form-group">
+          <div class="form-group">
             <h:outputLabel for="latitude" value="Breitengrad (Latitude) *:" />
             <h:inputText id="latitude" value="#{reportNetBean.latitude}" 
                         required="true" requiredMessage="Breitengrad ist erforderlich">
@@ -92,6 +91,8 @@
         <div class="form-group">
             <h:commandButton value="Geisternetz melden" action="#{reportNetBean.reportNet}" 
                            styleClass="button" />
+            <h:button value="Zurück zur Startseite" outcome="index" 
+                     styleClass="button" style="margin-left: 10px;" />
         </div>
     </h:form>
     

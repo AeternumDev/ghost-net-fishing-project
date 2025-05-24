@@ -21,12 +21,8 @@ public class AbandonedNet {
     private String beschreibung;
 
     @Column(precision = 10, scale = 6, nullable = false)
-    private BigDecimal latitude;
-
-    @Column(precision = 10, scale = 6, nullable = false)
-    private BigDecimal longitude;    @ManyToOne
-    @JoinColumn(name = "bergendePerson_id")
-    private RecoveryDiver bergendePerson;
+    private BigDecimal latitude;    @Column(precision = 10, scale = 6, nullable = false)
+    private BigDecimal longitude;
 
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "meldendePerson_id")
@@ -76,16 +72,8 @@ public class AbandonedNet {
 
     public BigDecimal getLongitude() {
         return longitude;
-    }
-
-    public void setLongitude(BigDecimal longitude) {
+    }    public void setLongitude(BigDecimal longitude) {
         this.longitude = longitude;
-    }    public RecoveryDiver getBergendePerson() {
-        return bergendePerson;
-    }
-
-    public void setBergendePerson(RecoveryDiver bergendePerson) {
-        this.bergendePerson = bergendePerson;
     }
 
     public Spotter getMeldendePerson() {
@@ -94,7 +82,9 @@ public class AbandonedNet {
 
     public void setMeldendePerson(Spotter meldendePerson) {
         this.meldendePerson = meldendePerson;
-    }    @Override
+    }
+
+    @Override
     public String toString() {
         return "AbandonedNet{" +
                 "id=" + id +
@@ -103,7 +93,6 @@ public class AbandonedNet {
                 ", beschreibung='" + beschreibung + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
-                ", bergendePerson=" + bergendePerson +
                 ", meldendePerson=" + meldendePerson +
                 '}';
     }

@@ -59,22 +59,13 @@
         <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
     </p:confirmDialog>
 
-    <h1>📍 Geisternetz-Verwaltung</h1>
-
-    <div class="button-container">        <p:button value="Meldende Personen"
+    <h1>📍 Geisternetz-Verwaltung</h1>    <div class="button-container">        <p:button value="Meldende Personen"
                   icon="pi pi-users"
                   outcome="spotter.xhtml"
-                  styleClass="ui-button ui-button-primary" />
-
-        <p:button value="Bergende Personen"
-                  icon="pi pi-id-card"
-                  outcome="recoveryDiver.xhtml"
-                  styleClass="ui-button ui-button-primary" />
-
-        <p:button value="Kartenansicht"
-                  icon="pi pi-map"
-                  outcome="oceanMap.xhtml"
-                  styleClass="ui-button ui-button-primary" />
+                  styleClass="ui-button ui-button-primary" />        <p:button value="Bergung verwalten"
+                  icon="pi pi-truck"
+                  outcome="retrieval.xhtml"
+                  styleClass="ui-button ui-button-success" />
 
         <p:commandButton value="🔄 Tabelle aktualisieren" icon="pi pi-refresh"
                          update=":geisternetzForm:geisternetzTable messages"
@@ -155,9 +146,7 @@
 
                 <p:outputLabel value="Längengrad:" style="font-weight: bold;" />
                 <p:inputNumber value="#{marineNetController.selectedGeisternetz.longitude}" decimalPlaces="6"
-                               style="width:100%;" />                <p:outputLabel value="Bergende Person:" style="font-weight: bold;" />
-                <h:outputText value="#{marineNetController.selectedGeisternetz.bergendePerson != null ? marineNetController.selectedGeisternetz.bergendePerson.name : 'Keine'}" />
-
+                               style="width:100%;" />
                 <p:outputLabel value="Meldende Person:" style="font-weight: bold;" />
                 <h:outputText value="#{marineNetController.selectedGeisternetz.meldendePerson != null ? marineNetController.selectedGeisternetz.meldendePerson.name : 'Keine'}" />
 

@@ -18,16 +18,25 @@ import java.util.Date;
 public class ReportNetBean {
 
     @Inject
-    private GhostNetService ghostNetService;
-
-    private GhostNet newNet = new GhostNet();
+    private GhostNetService ghostNetService;    private GhostNet newNet = new GhostNet();
     private String reporterName;
     private String reporterPhone;
     private boolean anonymousReport = false;
-
-    public String reportNet() {
+    
+    // Properties for form binding
+    private Double latitude;
+    private Double longitude;
+    private String estimatedSize;
+    private boolean anonymous = false;    public String reportNet() {
         try {
-            if (anonymousReport) {
+            // Set coordinates and size from form
+            if (latitude != null && longitude != null) {
+                newNet.setLatitude(latitude);
+                newNet.setLongitude(longitude);
+            }
+            newNet.setDescription(estimatedSize); // Store estimated size in description
+            
+            if (anonymous || anonymousReport) {
                 reporterName = null;
                 reporterPhone = null;
             } else {
@@ -49,6 +58,10 @@ public class ReportNetBean {
             reporterName = null;
             reporterPhone = null;
             anonymousReport = false;
+            anonymous = false;
+            latitude = null;
+            longitude = null;
+            estimatedSize = null;
             
             return "viewNets.xhtml?faces-redirect=true"; 
         } catch (Exception e) {
@@ -92,5 +105,37 @@ public class ReportNetBean {
 
     public void setAnonymousReport(boolean anonymousReport) {
         this.anonymousReport = anonymousReport;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getEstimatedSize() {
+        return estimatedSize;
+    }
+
+    public void setEstimatedSize(String estimatedSize) {
+        this.estimatedSize = estimatedSize;
+    }
+
+    public boolean isAnonymous() {
+        return anonymous;
+    }
+
+    public void setAnonymous(boolean anonymous) {
+        this.anonymous = anonymous;
     }
 }
